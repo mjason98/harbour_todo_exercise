@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
 import { Heart } from '@/components/icons/Heart';
@@ -29,29 +29,69 @@ const ADD_TODO = gql`
   }
 `;
 
+const FINSH_TODO = gql`
+mutation Mutation($finishTodoId: Int!, $listId: Int!) {
+  finishTODO(id: $finishTodoId, listId: $listId) {
+    id
+    finished
+    desc
+  }
+}
+`;
+
+const REMOVE_TODO = gql`
+mutation Mutation($removeTodoId: Int!, $listId: Int!) {
+  removeTODO(id: $removeTodoId, listId: $listId)
+}
+`;
+
 
 export const Todos = ({ list = [], listId }: TodosProps) => {
   const [todos, setTodos] = useState<Todo[]>(list);
   const [loading, setLoading] = useState<boolean>(false);
 
   const onAddHandler = (desc: string) => {
-    client.request<{ addTODO: Todo }>(
-      ADD_TODO,
-      {
+    client
+      .request<{ addTODO: Todo }>(ADD_TODO, {
         listId: listId,
         desc: desc,
-      },
-    ).then(data => {
-      setTodos([...todos, data.addTODO]);
-    });
+      })
+      .then((data) => {
+        setTodos([...todos, data.addTODO]);
+        setLoading(false);
+      });
+    setLoading(true);
   };
 
   const onRemoveHandler = (id: number) => {
-    console.log(`Remove todo ${id}`);
+    client
+      .request<{ removeTODO: boolean }>(REMOVE_TODO, {
+        listId: listId,
+        removeTodoId: id,
+      })
+      .then((data) => {
+        if (data.removeTODO)
+          setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
+        setLoading(false);
+      });
+    setLoading(true);
   };
 
   const onFinishHandler = (id: number) => {
-    console.log(`Mark todo ${id} as finished`);
+    client
+      .request<{ finishTODO: Todo }>(FINSH_TODO, {
+        listId: listId,
+        finishTodoId: id,
+      })
+      .then((data) => {
+        setTodos(prevTodos =>
+          prevTodos.map(todo =>
+            todo.id === data.finishTODO.id ? { ...todo, finished: true } : todo
+          )
+        );
+        setLoading(false);
+      });
+    setLoading(true);
   };
 
   return (
@@ -84,7 +124,7 @@ export const Todos = ({ list = [], listId }: TodosProps) => {
           </li>
         ))}
       </ul>
-      <AddTodo onAdd={onAddHandler} loading={loading}/>
+      <AddTodo onAdd={onAddHandler} loading={loading} />
     </div>
   );
 };
