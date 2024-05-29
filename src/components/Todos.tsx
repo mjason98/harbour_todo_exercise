@@ -5,6 +5,9 @@ import { Heart } from '@/components/icons/Heart';
 import { Close } from '@/components/icons/Close';
 import { AddTodo } from '@/components/AddTodo';
 
+import { gql } from 'graphql-request';
+import { client } from '@/lib/client';
+
 export type Todo = {
   id: number;
   desc: string;
@@ -16,11 +19,31 @@ type TodosProps = {
   list: Todo[];
 };
 
+const ADD_TODO = gql`
+  mutation Mutation($listId: Int!, $desc: String!) {
+    addTODO(listId: $listId, desc: $desc) {
+      desc
+      id
+      desc
+    }
+  }
+`;
+
+
 export const Todos = ({ list = [], listId }: TodosProps) => {
   const [todos, setTodos] = useState<Todo[]>(list);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const onAddHandler = (desc: string) => {
-    console.log(`Add todo ${desc}`);
+    client.request<{ addTODO: Todo }>(
+      ADD_TODO,
+      {
+        listId: listId,
+        desc: desc,
+      },
+    ).then(data => {
+      setTodos([...todos, data.addTODO]);
+    });
   };
 
   const onRemoveHandler = (id: number) => {
@@ -52,6 +75,7 @@ export const Todos = ({ list = [], listId }: TodosProps) => {
                 <button
                   className="btn btn-square btn-error"
                   onClick={() => onRemoveHandler(item.id)}
+                  disabled={loading}
                 >
                   <Close />
                 </button>
@@ -60,7 +84,7 @@ export const Todos = ({ list = [], listId }: TodosProps) => {
           </li>
         ))}
       </ul>
-      <AddTodo onAdd={onAddHandler} />
+      <AddTodo onAdd={onAddHandler} loading={loading}/>
     </div>
   );
 };

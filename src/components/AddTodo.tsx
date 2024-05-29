@@ -1,8 +1,9 @@
 type AddTODOFormProps = {
   onAdd(desc: string): void;
+  loading: boolean;
 };
 
-export const AddTodo = ({ onAdd }: AddTODOFormProps) => {
+export const AddTodo = ({ onAdd, loading }: AddTODOFormProps) => {
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const desc = event.currentTarget.desc.value;
@@ -20,7 +21,7 @@ export const AddTodo = ({ onAdd }: AddTODOFormProps) => {
           className="input w-full"
         />
       </div>
-      <button type="submit" className="btn btn-secondary w-full mt-4">
+      <button type="submit" className="btn btn-secondary w-full mt-4" disabled={loading}>
         Add TODO
       </button>
     </form>

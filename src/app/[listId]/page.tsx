@@ -1,7 +1,6 @@
-import { Todos } from '@/components/Todos';
+import { Todos, Todo } from '@/components/Todos';
 import { gql } from 'graphql-request';
 import { client } from '@/lib/client';
-import { Todo } from '@/components/Todos';
 
 type MyListPageMetadata = {
   params: { listId: string };
@@ -38,10 +37,7 @@ export default async function MyListPage({
 
   return (
     <div className="flex align-center justify-center p-16 sm:p-8">
-      <Todos
-        listId={parseInt(listId)}
-        list={getTODOs ?? []}
-      />
+      <Todos listId={parseInt(listId)} list={getTODOs ?? []} />
     </div>
   );
 }
