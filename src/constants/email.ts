@@ -2,4 +2,6 @@
 // then we will use our email as a key.
 
 // TODO use you own email here
-export const MY_EMAIL_KEY = 'snaer@aranja.com';
+
+// NOTE: I use other email that the one I use to use in Harbour Space Academics Apps :)
+export const MY_EMAIL_KEY = 'mjasoncuba@gmail.com';
