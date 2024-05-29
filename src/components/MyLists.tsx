@@ -6,6 +6,9 @@ import { CreateList } from '@/components/CreateList';
 import { randomColor } from '@/utils/randomColor';
 import { useState } from 'react';
 
+import { gql } from 'graphql-request';
+import { client } from '@/lib/client';
+
 export type TodoList = {
   id: number;
   created_at: string;
@@ -16,6 +19,13 @@ export type TodoList = {
 type MyListsProps = {
   list: TodoList[];
 };
+
+const DELETE_LIST_MUT = gql`
+mutation Mutation($deleteListId: Int!) {
+  deleteList(id: $deleteListId)
+}
+`;
+
 
 export const MyLists = ({ list = [] }: MyListsProps) => {
   const [todoLists, setTodoLists] = useState<TodoList[]>(list);
@@ -44,6 +54,7 @@ export const MyLists = ({ list = [] }: MyListsProps) => {
             >
               {item.name}
             </Link>
+            aa
           </li>
         ))}
       </ul>
